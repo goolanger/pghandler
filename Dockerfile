@@ -1,9 +1,7 @@
 FROM golang:1.14
 
 # INSTALL BEE
-ARG WORKDIR=/usr/src/app
-RUN mkdir -p $WORKDIR
-WORKDIR $WORKDIR
+WORKDIR /usr/src/app
 RUN go mod init beeinstall.org
 RUN go get -v github.com/beego/bee/...
 
