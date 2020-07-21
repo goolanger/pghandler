@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/codezork/pghandler/src"
 	"log"
 	"net/http"
 	"os"
@@ -41,7 +42,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func cmdExec(w http.ResponseWriter, command string, dumpfile string, scalefactor string) {
-	var path string = "/usr/bin/"+command+".sh"
+	var path string = "/usr/bin/" + command + ".sh"
 	log.Printf("path %s\n", path)
 	_, err := exec.LookPath(path)
 	if err != nil {
@@ -57,21 +58,21 @@ func cmdExec(w http.ResponseWriter, command string, dumpfile string, scalefactor
 	}
 	log.Printf("arg: %s\n", arg)
 	cmd := &exec.Cmd{
-		Path: path,
-		Args: []string{arg},
+		Path:   path,
+		Args:   []string{arg},
 		Stdout: nil,
 		Stderr: nil,
 	}
 	w.Write([]byte(fmt.Sprintf("Executing %s\n", command)))
 	cmd.Start()
-	cmd.Wait();
+	cmd.Wait()
 	w.Write([]byte(fmt.Sprintf("%s done\n", command)))
-	output, err := cmd.Output()
-	if err != nil {
-		log.Printf("err:%s", err.Error())
-	}
-	log.Printf("output:%s", output)
-	w.Write([]byte(fmt.Sprintf("%s\n", output)))
+	//output, err := cmd.Output()
+	//if err != nil {
+	//	log.Printf("err:%s", err.Error())
+	//}
+	//log.Printf("output:%s", output)
+	//w.Write([]byte(fmt.Sprintf("%s\n", output)))
 	log.Printf("%s done\n", command)
 }
 
@@ -81,11 +82,24 @@ func main() {
 
 	r.HandleFunc("/", handler)
 
+	cfg, err := src.ReadConfiguration()
+	if err != nil {
+		panic(err)
+	}
+
+	readtimeout, err := time.ParseDuration(cfg.Server.ReadTimeout)
+	if err != nil {
+		readtimeout = 10 * time.Second
+	}
+	writetimeout, err := time.ParseDuration(cfg.Server.WriteTimeout)
+	if err != nil {
+		writetimeout = 10 * time.Second
+	}
 	srv := &http.Server{
 		Handler:      r,
-		Addr:         ":8090",
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		Addr:         cfg.Server.Host + ":" + cfg.Server.Port,
+		ReadTimeout:  readtimeout,
+		WriteTimeout: writetimeout,
 	}
 
 	// Configure Logging

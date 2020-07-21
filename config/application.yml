@@ -1,0 +1,31 @@
+# Server configuration
+server:
+  host: "localhost"
+  port: 8091
+
+# Database credentials
+instances:
+  - name: "test"
+    host: "localhost"
+    port: 5432
+    databases:
+      - name: "tenant01"
+        schema: "public"
+        user: "postgres"
+        pass: "password"
+      - name: "tenant02"
+        schema: "public"
+        user: "postgres"
+        pass: "password"
+  - name: "test2"
+    host: "127.0.0.1"
+    port: 5432
+    databases:
+      - name: "database1"
+        schema: "public"
+        user: "postgres"
+        pass: "password"
+      - name: "database2"
+        schema: public
+        user: "postgres"
+        pass: "password"

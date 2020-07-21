@@ -46,7 +46,7 @@ RUN mkdir -p ${BACKUP_DIR}
 ENV LOG_FILE_LOCATION=${BACKUP_DIR}/pghandler.log
 
 # Expose port 8080 to the outside world
-EXPOSE 8090
+EXPOSE 8091
 
 # Declare volumes to mount
 VOLUME [${BACKUP_DIR}]
